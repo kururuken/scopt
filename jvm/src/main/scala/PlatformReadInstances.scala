@@ -1,6 +1,7 @@
 package scopt
 
 import java.net.{ URL, UnknownHostException }
+import java.util.TimeZone
 import collection.{ Seq => CSeq }
 import scala.io.Source
 
@@ -16,10 +17,11 @@ private[scopt] object platform {
   def mkParseEx(s: String, p: Int) = new java.text.ParseException(s, p)
 
   trait PlatformReadInstances {
-    def calendarRead(pattern: String): Read[Calendar] = calendarRead(pattern, Locale.getDefault)
-    def calendarRead(pattern: String, locale: Locale): Read[Calendar] =
+    def calendarRead(pattern: String): Read[Calendar] = calendarRead(pattern, TimeZone.getDefault)
+    def calendarRead(pattern: String, timeZone: TimeZone): Read[Calendar] =
       Read.reads { s =>
         val fmt = new SimpleDateFormat(pattern)
+        fmt.setTimeZone(timeZone)
         val c = new GregorianCalendar
         c.setTime(fmt.parse(s))
         c

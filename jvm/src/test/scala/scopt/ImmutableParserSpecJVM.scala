@@ -1,6 +1,8 @@
 package scopttest
 
-import java.util.{ Calendar, GregorianCalendar }
+import scopt.Read
+
+import java.util.{ Calendar, GregorianCalendar, TimeZone }
 import java.io.File
 import java.net.{ InetAddress, URI, URL }
 import scala.concurrent.duration.Duration
@@ -14,6 +16,7 @@ object ImmutableParserSpecJVM extends verify.BasicTestSuite {
   test("calendar parser should parse 2000-01-01") {
     calendarParser("--foo", "2000-01-01")
     calendarParser("--foo=2000-01-01")
+    calendatParserTimeZone("--foo", "2000-01-01")
     calendarParserFail("--foo", "bar")
     calendarParserFail("--foo=bar")
   }
@@ -54,6 +57,17 @@ object ImmutableParserSpecJVM extends verify.BasicTestSuite {
     val result = calendarParser1.parse(args.toSeq, Config())
     assert(
       result.get.calendarValue.getTime == new GregorianCalendar(2000, Calendar.JANUARY, 1).getTime)
+  }
+  def calendatParserTimeZone(args: String*): Unit = {
+    implicit val calendarRead: Read[Calendar] =
+      scopt.Read.calendarRead("yyyy-MM-dd", TimeZone.getTimeZone("GMT"))
+    val parser = new scopt.OptionParser[Config]("scopt") {
+      head("scopt", "3.x")
+      opt[Calendar]("foo").action((x, c) => c.copy(calendarValue = x))
+      help("help")
+    }
+    val result = parser.parse(args.toSeq, Config())
+    assert(result.get.calendarValue.getTimeInMillis == 946684800000L)
   }
   def calendarParserFail(args: String*): Unit = {
     val result = calendarParser1.parse(args.toSeq, Config())
