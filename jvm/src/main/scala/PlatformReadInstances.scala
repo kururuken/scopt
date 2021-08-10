@@ -1,7 +1,6 @@
 package scopt
 
 import java.net.{ URL, UnknownHostException }
-import java.util.TimeZone
 import collection.{ Seq => CSeq }
 import scala.io.Source
 

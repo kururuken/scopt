@@ -1,7 +1,5 @@
 package scopttest
 
-import scopt.Read
-
 import java.util.{ Calendar, GregorianCalendar }
 import java.io.File
 import java.net.{ InetAddress, URI, URL }
